@@ -9,4 +9,4 @@
  gpg -d archivo.pdf.gpg. >> archivo.pdf
  
  gpg --verify archivo.pdf
- 
+ ////
