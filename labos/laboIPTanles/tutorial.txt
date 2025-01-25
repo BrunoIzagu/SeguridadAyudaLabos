@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# Limpia todas las reglas actuales
+sudo iptables -F
+sudo iptables -X
+iptables -t nat -F
+iptables -t nat -X
+iptables -t mangle -F
+iptables -t mangle -X
+
+# Establece políticas por defecto
+sudo iptables -P INPUT DROP
+sudo iptables -P FORWARD DROP
+sudo iptables -P OUTPUT ACCEPT
+
+# Permite tráfico de loopback
+sudo iptables -A INPUT -i lo -j ACCEPT
+sudo iptables -A OUTPUT -o lo -j ACCEPT
+
+# Acepta conexiones SSH solo desde 34.175.208.81 y tu máquina local (reemplaza <TU_IP_LOCAL>)
+sudo iptables -A INPUT -p tcp --dport 22 -s 34.175.208.81 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 22 -s <TU_IP_LOCAL> -j ACCEPT
+
+# Permite conexiones FTP desde la red ehu.eus (158.227.0.65/24)
+sudo iptables -A INPUT -p tcp --dport 21 -s 158.227.0.65/24 -j ACCEPT
+
+# Bloquea conexiones HTTP (puerto 80)
+sudo iptables -A INPUT -p tcp --dport 80 -j DROP
+
+# Permite conexiones HTTPS (puerto 443)
+sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+
+# Bloquear Twitter
+sudo iptables -A OUTPUT -p tcp -d twitter.com -j REJECT
+sudo iptables -A OUTPUT -p tcp -d www.twitter.com -j REJECT
+
+# Bloquear Facebook
+sudo iptables -A OUTPUT -p tcp -d facebook.com -j REJECT
+sudo iptables -A OUTPUT -p tcp -d www.facebook.com -j REJECT
+
+# Bloquear YouTube
+sudo iptables -A OUTPUT -p tcp -d youtube.com -j REJECT
+sudo iptables -A OUTPUT -p tcp -d www.youtube.com -j REJECT
+
+# Permite tráfico relacionado con conexiones establecidas
+sudo iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# Log para debugging (opcional)
+iptables -A INPUT -j LOG --log-prefix "IPTables-INPUT-Dropped: "
+iptables -A OUTPUT -j LOG --log-prefix "IPTables-OUTPUT-Dropped: "
+
+# Guarda las reglas
+iptables-save > /etc/iptables/rules.v4
+

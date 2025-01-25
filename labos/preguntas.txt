@@ -1,0 +1,7 @@
+Si quieres escribir un mensaje secreto en una imagen, y garantizar al destinatario que nadie lo ha
+modificado, ¿Qué pasos seguirías?
+haces un resumen cripto grafico del mensaje le pasas laclave hash y el mensaje oculto y eldestinatario cuando saque el mensaje oculto hace otro resumne criptografico comprueba si las claves hash son las mismas
+¿Sería posible incorporar en el contenido de un fichero su propio resumen criptográfico? Esto es, ¿Podría
+ponerse en el texto de este enunciado el resumen criptográfico que le corresponda al propio enunciado
+para que pudiérais comprobar su autenticidad?
+Por porder puedes meter la clave hash en el texto pero al minimo cambio cambiaria la clave hash y no podrias comprobar la autenticidad

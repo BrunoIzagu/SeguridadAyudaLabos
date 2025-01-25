@@ -1,0 +1,124 @@
+¿En qué puertos escucha nuestro proyecto? (Pista: netstat) -tuln
+81,8890,8890
+
+
+
+4. Crear Reglas de Firewall para Permitir el Acceso Externo
+Identificar los Puertos en Uso
+
+Para determinar los puertos que tu aplicación necesita abiertos, ejecuta:
+
+bash
+
+$ netstat -tuln
+
+Esto muestra una lista de puertos en los que tu aplicación está escuchando (por ejemplo, 80 para HTTP, 443 para HTTPS, o el puerto de MySQL si se usa). Anota estos puertos.
+Abrir Puertos en Google Cloud
+
+Para habilitar el acceso externo, debes crear reglas de firewall en la Red de VPC de Google Cloud:
+
+    Ve a Red de VPC > Reglas de firewall en la consola de Google Cloud.
+    Crea una nueva regla para cada puerto que deseas abrir:
+        Nombre de la regla: Por ejemplo, permitir-http-80 o permitir-https-443.
+        Dirección de tráfico: Entrante.
+        Acción en coincidencia: Permitir.
+        Objetivo: Selecciona etiquetas específicas si ya has configurado una (por ejemplo, http-server), o elige Todos los recursos de la red.
+        Rango de IPs de origen: 0.0.0.0/0 para permitir el acceso público.
+        Protocolos y puertos: Especifica tcp:80, tcp:443, o los puertos que identificaste con netstat.
+
+Esto permitirá el acceso externo a tu aplicación en los puertos necesarios.
+5. Cerrar los Puertos 80 y 443 al Tráfico Entrante
+
+Si deseas bloquear los puertos 80 (HTTP) y 443 (HTTPS), debes crear reglas de firewall para denegar el tráfico entrante en estos puertos:
+
+    Ve a Red de VPC > Reglas de firewall.
+    Crea una regla para cada puerto que deseas bloquear:
+        Nombre de la regla: denegar-http-80 o denegar-https-443.
+        Dirección de tráfico: Entrante.
+        Acción en coincidencia: Denegar.
+        Rango de IPs de origen: 0.0.0.0/0.
+        Protocolos y puertos: tcp:80 y tcp:443.
+
+Esta configuración bloqueará el tráfico en los puertos 80 y 443, protegiendo tu aplicación de accesos externos en estos puertos.
+6. Bloquear Tráfico Saliente hacia una URL Específica (Wikipedia)
+
+$ nslookup www.wikipedia.com
+Haz clic en Create firewall rule (Crear regla de firewall).
+
+Configura la regla de la siguiente forma:
+
+    Name (Nombre): Elige un nombre descriptivo, como bloquear-salida-wikipedia.
+    Network (Red): Selecciona la red VPC en la que se encuentra tu servidor.
+    Direction of traffic (Dirección del tráfico): Selecciona Egress (Saliente), ya que queremos bloquear el tráfico de salida.
+    Action on match (Acción en coincidencia): Selecciona Deny (Denegar).
+    Targets (Objetivos): Selecciona All instances in the network (Todas las instancias en la red) o elige instancias específicas si solo deseas aplicar esta regla a ciertas máquinas virtuales.
+    Destination IP ranges (Rango de IP de destino): Ingresa la IP de Wikipedia que deseas bloquear, por ejemplo 208.80.154.224/32 (usa /32 para indicar una sola IP).
+    Protocols and ports (Protocolos y puertos): Selecciona Specified protocols and ports (Protocolos y puertos específicos), marca tcp, e ingresa el puerto 443 (para HTTPS). Puedes agregar 80 si deseas bloquear el tráfico HTTP.
+
+Haz clic en Create (Crear) para aplicar la regla.
+
+7. Bloquear el Tráfico Entrante en el Puerto 8890 desde tu IP Actual
+
+Para bloquear el tráfico entrante desde tu IP específica al puerto 8890, sigue estos pasos:
+
+    Encontrar tu IP Pública: Puedes verificar tu IP actual usando un servicio como What is my IP.
+    Crear una Regla de Firewall en Google Cloud:
+        Ve a Red de VPC > Reglas de firewall.
+        Crea una regla para bloquear el tráfico en el puerto 8890 desde tu IP específica:
+            Nombre de la regla: bloquear-entrada-8890-ip.
+            Dirección de tráfico: Entrante.
+            Acción en coincidencia: Denegar.
+            Rango de IPs de origen: Introduce tu IP pública aquí.
+            Protocolos y puertos: tcp:8890.
+
+Con esta regla, el servidor bloqueará cualquier intento de conexión al puerto 8890 desde la IP que hayas especificado.
+Resumen
+
+Estos pasos cubren desde el despliegue inicial de tu proyecto hasta la configuración de firewall para gestionar permisos de tráfico entrante y saliente.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+7. Bloquear el Tráfico Entrante en el Puerto 8890 desde tu IP Actual
+
+Para bloquear el tráfico entrante desde tu IP específica al puerto 8890, sigue estos pasos:
+
+    Encontrar tu IP Pública: Puedes verificar tu IP actual usando un servicio como What is my IP.
+    Crear una Regla de Firewall en Google Cloud:
+        Ve a Red de VPC > Reglas de firewall.
+        Crea una regla para bloquear el tráfico en el puerto 8890 desde tu IP específica:
+            Nombre de la regla: bloquear-entrada-8890-ip.
+            Dirección de tráfico: Entrante.
+            Acción en coincidencia: Denegar.
+            Rango de IPs de origen: Introduce tu IP pública aquí.
+            Protocolos y puertos: tcp:8890.
+
+Con esta regla, el servidor bloqueará cualquier intento de conexión al puerto 8890 desde la IP que hayas especificado.

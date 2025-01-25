@@ -1,0 +1,15 @@
+
+
+
+rsync -av ~/Escritorio/Seguridad bruno.izaguspruebalabo@34.175.143.152:/var/tmp/Backups
+
+
+rsync -av --link-dest=../SeguridadLinkDest . bruno.izaguspruebalabo@34.175.143.152:/var/tmp/Backups/8-11-2024
+rsync -av --link-dest=../8-11-2024 . bruno.izaguspruebalabo@34.175.143.152:/var/tmp/Backups/9-11-2024
+
+recuperar lo borrado: rsync -av bruno.izaguspruebalabo@34.175.143.152:/var/tmp/Backups/9-11-2024/ ~/Escritorio/Seguridad/
+
+copiar de servidor remoto a local: scp bruno.izaguspruebalabo@34.175.143.152:/var/tmp/Backups/31-10-2024/g.txt ~/Escritorio
+copiar de local a servidor remoto: scp ~/Escritorio/Seguridad/g.txt bruno.izaguspruebalabo@34.175.143.152:/var/tmp/Backups/31-10-2024
+
+

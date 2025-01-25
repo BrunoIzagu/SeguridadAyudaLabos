@@ -1,0 +1,75 @@
+1. Exportar una clave GPG para usarla en otro equipo
+
+Para exportar tu clave GPG (ya sea pública o privada), puedes seguir estos pasos:
+
+    Exportar la clave pública: La clave pública se comparte con otros usuarios para que puedan cifrar documentos para ti o verificar tu firma.
+
+    bash
+
+gpg --export -a "tu_correo@example.com" > public_key.asc
+
+Esto exportará la clave pública asociada al correo y la guardará en un archivo llamado public_key.asc.
+
+Exportar la clave privada: Si necesitas usar la clave en otro equipo, tendrás que exportar la clave privada (también llamada clave secreta). Asegúrate de mantener esta clave en un lugar seguro.
+
+bash
+
+gpg --export-secret-keys -a "tu_correo@example.com" > private_key.asc
+
+Esto exportará tu clave privada en formato ASCII al archivo private_key.asc.
+
+Transferir la clave a otro equipo: Copia el archivo de la clave privada al nuevo equipo y luego impórtalo usando el siguiente comando:
+
+bash
+
+    gpg --import private_key.asc
+
+    Después de esto, puedes usar la clave en el nuevo equipo como si estuviera en el equipo original.
+
+2. Revocar una clave comprometida
+
+Si sospechas que tu clave GPG ha sido comprometida, deberías revocarla para evitar que otros usuarios la utilicen. Hay dos formas de hacerlo:
+
+    Generar un certificado de revocación: Es recomendable crear un certificado de revocación al crear una clave, para usarlo en caso de compromiso. Para generarlo:
+
+    bash
+
+gpg --output revocacion.asc --gen-revoke "tu_correo@example.com"
+
+Luego, si decides revocar tu clave, puedes distribuir este certificado para que los demás sepan que la clave ya no es válida.
+
+Revocar la clave manualmente: Si no tienes un certificado de revocación, puedes revocar tu clave desde el anillo de claves con el siguiente comando:
+
+bash
+
+gpg --edit-key "tu_correo@example.com"
+
+Luego, en el modo interactivo de edición de claves, ejecuta el comando revkey para revocarla.
+
+Publicar la revocación: Una vez revocada, es importante subir la revocación a un servidor de claves públicas (si tu clave está publicada). Puedes hacer esto con el siguiente comando:
+
+bash
+
+    gpg --send-keys "tu_correo@example.com"
+
+3. Cifrar un documento de manera simétrica
+
+GPG también permite el cifrado simétrico, que usa una sola contraseña en lugar de claves públicas y privadas. Este tipo de cifrado es útil cuando ambas partes acuerdan una contraseña común.
+
+    Cifrar el documento: Para cifrar un archivo de forma simétrica, usa el siguiente comando:
+
+    bash
+
+gpg --symmetric documento.txt
+
+Esto generará un archivo cifrado llamado documento.txt.gpg. El comando te pedirá una contraseña, que será utilizada para cifrar y luego descifrar el archivo.
+
+Enviar el archivo cifrado: Una vez cifrado, puedes enviar el archivo documento.txt.gpg al destinatario.
+
+Descifrar el archivo: El destinatario puede descifrar el archivo utilizando el siguiente comando:
+
+bash
+
+gpg --decrypt documento.txt.gpg > documento.txt
+
+El sistema solicitará la misma contraseña utilizada para cifrar el archivo. Una vez ingresada, el archivo original se restaurará como documento.txt.

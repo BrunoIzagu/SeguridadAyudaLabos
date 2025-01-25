@@ -1,0 +1,158 @@
+rsync -av /home/usuario/Seguridad /var/tmp/Backups
+
+Desglose del comando:
+
+    rsync: Es una herramienta de Linux usada para sincronizar y copiar archivos y directorios entre dos ubicaciones, ya sea localmente o entre máquinas remotas.
+
+    -a (modo archivo): Esta opción es un modo de "archivo" que agrupa varias banderas importantes para la preservación de los atributos de los archivos. Es decir, realiza una copia recursiva de directorios y mantiene las siguientes propiedades:
+        Preserva enlaces simbólicos.
+        Preserva permisos y fechas de modificación.
+        Mantiene el propietario y grupo de los archivos.
+        Conserva los dispositivos y nodos especiales si es necesario.
+
+    En resumen, el modo -a asegura que los archivos copiados conserven su estado original en cuanto a atributos, estructura y propiedades.
+
+    -v (modo verbose): Muestra un nivel más alto de detalle mientras se ejecuta el comando. En otras palabras, imprime información sobre los archivos y directorios que están siendo copiados, lo cual es útil para verificar qué está sucediendo durante la sincronización.
+
+¿Qué hace el comando?
+
+    Origen: La carpeta /home/usuario/Seguridad contiene 5 archivos de texto (a, b, c, d y e). Es la fuente que se va a copiar.
+
+    Destino: El directorio /var/tmp/Backups es donde se almacenará la copia de seguridad. Si la carpeta Backups no existe, rsync la creará y luego copiará el contenido de la carpeta Seguridad en esa ubicación.
+
+    Proceso: El comando copia todos los archivos y subdirectorios de la carpeta Seguridad al directorio Backups, manteniendo su estructura y atributos originales. Además, muestra por pantalla información detallada de los archivos que va procesando debido a la opción -v.
+
+Resumen:
+
+    Copia completa inicial: Con este comando se realiza una copia completa de la carpeta Seguridad a /var/tmp/Backups. El directorio de destino tendrá una copia exacta de la carpeta de origen.
+
+    Opciones -a y -v: La opción -a asegura que se preserve toda la información sobre los archivos (propietarios, permisos, fechas, etc.), y la opción -v muestra detalles del proceso de copia en la terminal.
+    
+    4
+    
+    
+    
+    
+    Resumen:
+
+    Slash (/): Copia el contenido de la carpeta.
+    Sin slash: Copia la carpeta entera, incluida en la estructura de destino.
+    
+    
+    
+    
+    
+    
+    
+    Este comando de rsync está configurado para realizar una copia de seguridad incremental utilizando la opción --link-dest, que optimiza el proceso creando enlaces duros (hard links) para los archivos que no han sido modificados desde la última copia de seguridad. Vamos a desglosar cada parte del comando y analizar qué hace:
+
+bash
+
+rsync -av --link-dest=/var/tmp/Backups/SeguridadLinkDest . /var/tmp/Backups/fechaactual
+
+Desglose del comando:
+
+    rsync: Utiliza la herramienta rsync para copiar archivos de un directorio a otro, como en los comandos anteriores.
+
+    -a (modo archivo): Preserva las propiedades de los archivos (permisos, fechas, propietarios, etc.) y realiza una copia recursiva.
+
+    -v (verbose): Muestra detalles del proceso en la terminal (qué archivos se están copiando).
+
+    --link-dest=/var/tmp/Backups/SeguridadLinkDest:
+        --link-dest es una opción avanzada de rsync que compara los archivos en el directorio de origen con los archivos en el directorio especificado por este parámetro.
+        Si un archivo en el directorio de origen no ha cambiado desde la copia anterior, rsync crea un enlace duro al archivo en SeguridadLinkDest en lugar de copiarlo de nuevo, lo que ahorra espacio en disco.
+        Si un archivo ha cambiado o es nuevo, rsync lo copia como un archivo normal en la nueva ubicación.
+
+    /var/tmp/Backups/SeguridadLinkDest:
+        Este directorio es el punto de referencia para la comparación. Contiene los archivos de la copia de seguridad anterior, que rsync utilizará para detectar cambios.
+        Si un archivo en la carpeta de origen es idéntico a uno en SeguridadLinkDest, rsync creará un enlace duro (hard link) en la nueva copia de seguridad.
+
+    . (punto):
+        Este símbolo hace referencia a la carpeta actual, que es la carpeta Seguridad desde donde estás ejecutando el comando.
+        Es decir, este es el directorio de origen que se está copiando. En este caso, la carpeta Seguridad y su contenido.
+
+    /var/tmp/Backups/fechaactual:
+        Es el directorio de destino donde se almacenará la nueva copia de seguridad. En este caso, una nueva carpeta con el nombre de la fecha actual (por ejemplo, 22-10-2023).
+        Esta carpeta contendrá los archivos copiados desde Seguridad, pero aquellos archivos que no han cambiado respecto a la última copia estarán representados por enlaces duros en lugar de copias duplicadas.
+
+¿Qué hace este comando?
+
+    Compara los archivos en la carpeta Seguridad con los que están en SeguridadLinkDest (la copia de seguridad previa).
+    Si algún archivo en Seguridad no ha cambiado (es decir, es idéntico al que está en SeguridadLinkDest), no lo copia nuevamente, sino que crea un enlace duro a ese archivo en el directorio de destino, lo que ahorra espacio en disco.
+    Si un archivo ha cambiado (como los ficheros modificados a y b) o es nuevo (como el fichero f), se copiará completamente en el nuevo directorio de destino.
+    De este modo, se realiza una copia incremental donde solo se copian los archivos modificados o nuevos, y los archivos no modificados se enlazan desde la copia anterior.
+
+¿Qué aparece en el directorio con la fecha actual (/var/tmp/Backups/fechaactual)?
+
+En la carpeta con la fecha actual, tendrás una copia de la carpeta Seguridad con su contenido completo, pero:
+
+    Los archivos no modificados (por ejemplo, los archivos c, d y e, si no se cambiaron) estarán representados por enlaces duros que apuntan a los archivos correspondientes en SeguridadLinkDest.
+    Los archivos que sí cambiaron (los archivos a, b) o los nuevos (archivo f) serán copiados de forma normal.
+
+Esto significa que el directorio con la fecha actual parecerá una copia completa de la carpeta Seguridad, pero los archivos sin cambios no ocupan espacio adicional gracias a los enlaces duros.
+Resumen de los parámetros:
+
+    /var/tmp/Backups/SeguridadLinkDest: Carpeta de referencia que contiene la copia de seguridad anterior. rsync la usa para crear enlaces duros de archivos no modificados.
+    .: La carpeta Seguridad (directorio actual), es el origen de la copia.
+    /var/tmp/Backups/fechaactual: Es el destino donde se almacena la nueva copia de seguridad.
+
+Este proceso facilita las copias incrementales, donde se ahorra espacio en disco al no duplicar los archivos que no han cambiado.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+rsync -av --link-dest=/var/tmp/Backups/mañana ~/Escritorio/seguridad /var/tmp/Backups/fechapasadomañana
+
+recuperar lo borrado:rsync -av /var/tmp/Backups/24-10-2024/ ~/Escritorio/seguridad/
+
+
+
+
+
+
+
+
+
+
+
+Número de inode (primero): Es el identificador único del archivo en el sistema de archivos. Sirve para reconocer archivos duplicados o detectar si un archivo es el mismo en diferentes ubicaciones.
+
+Si dos archivos tienen el mismo inode, significa que son el mismo archivo físico, lo cual es útil para:
+
+    Evitar duplicados: Si una copia de seguridad incremental detecta que un archivo tiene el mismo inode que uno ya copiado, sabrá que no necesita copiarlo nuevamente.
+    Detección de enlaces duros: Si un archivo tiene el mismo inode en varios lugares, es un enlace duro al mismo archivo, lo que permite hacer copias sin duplicar el contenido.
+
+Número de enlaces duros (segundo): Indica cuántos nombres diferentes apuntan al mismo inode (archivo). Es útil para manejar eficientemente copias de seguridad incrementales y evitar duplicaciones físicas innecesarias.
+Si el número es 1, significa que ese archivo o directorio tiene un solo nombre apuntando a su inode.
+Si el número es mayor a 1 (por ejemplo, 2, 3, etc.), significa que existen varios nombres (enlaces duros) que apuntan al mismo contenido.
+
+Detección de archivos compartidos: Cuando realizas una copia de seguridad, si detectas que un archivo tiene varios enlaces duros (número mayor que 1), sabrás que el archivo puede estar referenciado en diferentes ubicaciones, pero todos comparten el mismo contenido físico. Esto es importante para evitar copiar varias veces el mismo archivo.
+Ahorro de espacio: Herramientas como rsync con la opción --link-dest pueden utilizar enlaces duros para crear copias incrementales, donde los archivos no modificados no se copian de nuevo, sino que se crean enlaces duros que apuntan al archivo original. Esto ahorra mucho espacio, ya que el archivo no se duplica físicamente.
+
+
+
+
+chmod +x /home/usuario/scripts/backup_seguridad.sh
+
+crontab -e
+0 12 * * * ~/Documentos/labos/labo5/backup_seguridad.sh
+todos los dias a las 12 pm
+comprobar: crontab -l
+
+
+

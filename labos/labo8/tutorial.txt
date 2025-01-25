@@ -1,0 +1,14 @@
+¿Por qué crees que abundan los periódicos entre los sitios que ofrecen servicios ONION?
+1. Protección de la privacidad y anonimato
+2. Censura y libertad de expresión
+3. Acceso a información en países con restricciones
+4. Protección contra ataques de DDoS o hackeos
+5. Plataforma para el periodismo de investigación y filtraciones
+6. Alcance global sin restricciones
+7. Confianza en un entorno menos controlado
+
+
+
+sudo -i para querer acceder a el hiddenDir /var/lib/tor/my_website/
+
+curl -x socks5h://localhost:9050 -s http://rf7wctv2wptzkdt6h577dirant5xq2v2uhy5nihdtn6aepoeyqr6koyd.onion

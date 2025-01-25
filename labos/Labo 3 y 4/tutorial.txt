@@ -1,0 +1,56 @@
+Entra en el servidor con $ssh bruno.izaguspruebalabo@34.175.143.152
+cd ~/.ssh
+nano authorized_keys
+Pegas laclave ssh del profe abajo
+chmod 600 ~/.ssh/authorized_keys
+chmod 700 ~/.ssh
+
+
+
+
+labo 4
+Entra en el servidor con $ssh Bruno@34.175.143.152
+instalas apache2
+
+generas la clave privada: openssl genpkey -algorithm RSA -out /etc/ssl/private/servidor.key -aes256
+
+Generar una solicitud de firma de certificado (CSR): openssl req -new -key /etc/ssl/private/servidor.key -out /etc/ssl/certs/servidor.csr
+
+Crear un certificado autofirmado: openssl x509 -req -days 365 -in /etc/ssl/certs/servidor.csr -signkey /etc/ssl/private/servidor.key -out /etc/ssl/certs/servidor.crt
+
+sudo a2enmod ssl
+sudo a2enmod rewrite
+sudo systemctl restart apache2
+
+
+sudo nano /etc/apache2/sites-available/ssl_site.conf
+
+<VirtualHost *:443>
+    ServerName http://34.175.143.152
+    DocumentRoot /var/www/html
+
+    SSLEngine on
+    SSLCertificateFile /etc/ssl/certs/servidor.crt
+    SSLCertificateKeyFile /etc/ssl/private/servidor.key
+
+    <Directory /var/www/html>
+        AllowOverride All
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+
+sudo nano /etc/apache2/sites-available/redirect_http.conf:
+<VirtualHost *:80>
+    ServerName http://34.175.143.152
+    Redirect permanent / https://34.175.143.152
+</VirtualHost>
+
+sudo a2ensite ssl_site.conf
+sudo a2ensite redirect_http.conf
+sudo systemctl restart apache2
+
+y entras en la pagina web con la ip en el buscador te da un error porque firmar tu mismo el certificado no es seguro.
+
+
